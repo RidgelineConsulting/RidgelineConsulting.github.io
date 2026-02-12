@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GFE Ridgeline Consulting | Operational Infrastructure for Growing Companies</title>
+    <meta name="description" content="We build the operational systems growing companies need but haven't built yet. Workforce architecture, career frameworks, AI-powered lead generation, and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           CSS VARIABLES — Edit these to rebrand easily
+           ============================================ */
+        :root {
+            --bg-primary: #0B0B0F;
+            --bg-surface: #141419;
+            --bg-elevated: #1C1C24;
+            --accent: #859A6A;
+            --accent-hover: #97AC7C;
+            --accent-glow: rgba(133, 154, 106, 0.15);
+            --text-primary: #F2EDE8;
+            --text-secondary: #87878F;
+            --text-muted: #55555E;
+            --border: #2A2A33;
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'Outfit', sans-serif;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --max-width: 1200px;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-weight: 300;
+            overflow-x: hidden;
+        }
+
+        /* Grain overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        a { color: var(--accent); text-decoration: none; transition: color var(--transition); }
+        a:hover { color: var(--accent-hover); }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.25rem 0;
+            transition: all var(--transition);
+            background: transparent;
+        }
+
+        nav.scrolled {
+            background: rgba(11, 11, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: 0.08em;
+            color: var(--text-primary);
+        }
+
+        .nav-logo .gfe {
+            color: var(--accent);
+            margin-right: 0.15em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            transition: color var(--transition);
+        }
+
+        .nav-links a:hover { color: var(--text-primary); }
+
+        .nav-cta {
+            background: var(--accent) !important;
+            color: var(--bg-primary) !important;
+            padding: 0.6rem 1.5rem !important;
+            border-radius: 4px;
+            font-weight: 600 !important;
+            transition: background var(--transition) !important;
+        }
+
+        .nav-cta:hover { background: var(--accent-hover) !important; }
+
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .mobile-toggle span {
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all var(--transition);
+        }
+
+        /* ============================================
+           HERO
+           ============================================ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-ridgeline {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            opacity: 0.06;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+
+        .hero-tag {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .hero-tag::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 6vw, 5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .highlight {
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 1rem 2rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.06em;
+            border-radius: 4px;
+            transition: all var(--transition);
+        }
+
+        .hero-cta:hover {
+            background: var(--accent-hover);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+        }
+
+        .hero-cta svg {
+            transition: transform var(--transition);
+        }
+
+        .hero-cta:hover svg {
+            transform: translateX(4px);
+        }
+
+        /* ============================================
+           SECTION BASE
+           ============================================ */
+        section {
+            padding: 7rem 0;
+        }
+
+        .section-tag {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-tag::before {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-intro {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 3.5rem;
+            line-height: 1.8;
+        }
+
+        /* ============================================
+           PROBLEM SECTION
+           ============================================ */
+        #problem {
+            border-top: 1px solid var(--border);
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .problem-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .problem-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 1.25rem;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            transition: all var(--transition);
+        }
+
+        .problem-item:hover {
+            background: var(--bg-surface);
+            border-color: var(--border);
+        }
+
+        .problem-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(133, 154, 106, 0.25);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.8rem;
+        }
+
+        .problem-item p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .problem-item strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .problem-answer {
+            padding: 2.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            position: sticky;
+            top: 6rem;
+        }
+
+        .problem-answer h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .problem-answer p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .problem-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ============================================
+           SERVICES SECTION
+           ============================================ */
+        #services {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .services-lead {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-card {
+            padding: 2.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover {
+            border-color: rgba(133, 154, 106, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .service-card.featured {
+            border-color: rgba(133, 154, 106, 0.2);
+        }
+
+        .service-badge {
+            display: inline-block;
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            border: 1px solid rgba(133, 154, 106, 0.3);
+            padding: 0.3rem 0.75rem;
+            border-radius: 3px;
+            margin-bottom: 1.25rem;
+        }
+
+        .service-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .service-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .service-meta {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.04em;
+        }
+
+        .services-supporting h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .supporting-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .supporting-item {
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all var(--transition);
+        }
+
+        .supporting-item:hover {
+            border-color: rgba(133, 154, 106, 0.2);
+            background: var(--bg-primary);
+        }
+
+        .supporting-item h4 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .supporting-item p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           CASE STUDIES
+           ============================================ */
+        .case-studies-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .case-study {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .case-study:hover {
+            border-color: rgba(133, 154, 106, 0.2);
+        }
+
+        .case-study-header {
+            padding: 2rem 2.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .case-study-header:hover {
+            background: var(--bg-elevated);
+        }
+
+        .case-study-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .case-study-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            opacity: 0.5;
+            min-width: 50px;
+        }
+
+        .case-study-header h3 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+
+        .case-study-header .client-type {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .case-study-toggle {
+            color: var(--accent);
+            font-size: 1.5rem;
+            transition: transform var(--transition);
+            font-weight: 300;
+        }
+
+        .case-study.active .case-study-toggle {
+            transform: rotate(45deg);
+        }
+
+        .case-study-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .case-study.active .case-study-content {
+            max-height: 600px;
+        }
+
+        .case-study-body {
+            padding: 0 2.5rem 2.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .case-study-col h4 {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+        }
+
+        .case-study-col p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        /* ============================================
+           ABOUT
+           ============================================ */
+        #about {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .about-text p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .about-values {
+            margin-top: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .value-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .value-marker {
+            width: 8px;
+            height: 8px;
+            min-width: 8px;
+            background: var(--accent);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+        }
+
+        .value-item h4 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .value-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           HOW WE WORK
+           ============================================ */
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            position: relative;
+        }
+
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 45px;
+            left: calc(16.66% + 1rem);
+            right: calc(16.66% + 1rem);
+            height: 1px;
+            background: var(--border);
+        }
+
+        .process-step {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin: 0 auto 1.5rem;
+            background: var(--bg-primary);
+            position: relative;
+            z-index: 2;
+        }
+
+        .process-step h3 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .process-step p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           CONTACT
+           ============================================ */
+        #contact {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .contact-info h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-line {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .contact-line svg {
+            color: var(--accent);
+            min-width: 20px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.85rem 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: border-color var(--transition);
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2387878F' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+
+        .form-submit {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 1rem 2rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.06em;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all var(--transition);
+            align-self: flex-start;
+        }
+
+        .form-submit:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .form-note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        footer {
+            padding: 3rem 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        footer .footer-logo {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        footer .footer-logo .gfe {
+            color: rgba(133, 154, 106, 0.5);
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .problem-grid,
+            .about-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .services-lead {
+                grid-template-columns: 1fr;
+            }
+
+            .supporting-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .case-study-body {
+                grid-template-columns: 1fr;
+            }
+
+            .problem-answer {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 4rem 0; }
+
+            .nav-links { display: none; }
+            .nav-links.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(11, 11, 15, 0.98);
+                backdrop-filter: blur(20px);
+                padding: 1.5rem 2rem;
+                border-bottom: 1px solid var(--border);
+                gap: 1.25rem;
+            }
+
+            .mobile-toggle { display: flex; }
+
+            .hero { min-height: 85vh; }
+
+            .supporting-grid { grid-template-columns: 1fr; }
+
+            .process-steps {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .process-steps::before { display: none; }
+
+            .form-row { grid-template-columns: 1fr; }
+
+            .about-stats { grid-template-columns: 1fr 1fr; }
+
+            .case-study-body {
+                padding: 0 1.5rem 1.5rem;
+            }
+
+            .case-study-header {
+                padding: 1.5rem;
+            }
+
+            .case-study-left {
+                gap: 1rem;
+            }
+
+            .case-study-number {
+                font-size: 1.5rem;
+                min-width: 35px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .about-stats { grid-template-columns: 1fr; }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         NAVIGATION
+         ============================================ -->
+    <nav>
+        <div class="container">
+            <div class="nav-logo"><span class="gfe">GFE</span> RIDGELINE</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#problem">The Problem</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#work">Proof of Work</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact" class="nav-cta">Let's Talk</a></li>
+            </ul>
+            <div class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+         HERO
+         ============================================ -->
+    <section class="hero">
+        <svg class="hero-ridgeline" viewBox="0 0 1440 200" preserveAspectRatio="none">
+            <path d="M0,200 L0,120 L80,100 L160,110 L240,80 L320,90 L400,60 L480,70 L520,40 L580,55 L640,30 L700,45 L760,20 L820,35 L880,15 L940,25 L1000,40 L1060,30 L1120,50 L1180,35 L1240,55 L1300,45 L1360,60 L1440,50 L1440,200 Z" fill="currentColor" style="color: var(--accent)"/>
+        </svg>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-tag reveal">GFE Ridgeline Consulting</div>
+                <h1 class="reveal reveal-delay-1">Your company has grown.<br>Your systems <span class="highlight">haven't.</span></h1>
+                <p class="hero-sub reveal reveal-delay-2">We build the operational infrastructure growing companies need but haven't built yet. Workforce architecture, career frameworks, and AI-powered tools that work on Monday morning.</p>
+                <a href="#contact" class="hero-cta reveal reveal-delay-3">
+                    Start a Conversation
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         PROBLEM
+         ============================================ -->
+    <section id="problem">
+        <div class="container">
+            <div class="section-tag reveal">Sound Familiar?</div>
+            <div class="problem-grid">
+                <div class="problem-list">
+                    <div class="problem-item reveal">
+                        <div class="problem-icon">01</div>
+                        <p><strong>Your best foreman just left</strong> for a competitor and you never saw it coming. There's no career path, no structure, no reason to stay.</p>
+                    </div>
+                    <div class="problem-item reveal reveal-delay-1">
+                        <div class="problem-icon">02</div>
+                        <p><strong>Your estimates keep missing</strong> and nobody can explain why. There's no standardized process, no tools, no methodology.</p>
+                    </div>
+                    <div class="problem-item reveal reveal-delay-2">
+                        <div class="problem-icon">03</div>
+                        <p><strong>Every decision runs through you</strong> because there's no system to handle it otherwise. You built a company that can't run without you in the room.</p>
+                    </div>
+                    <div class="problem-item reveal reveal-delay-3">
+                        <div class="problem-icon">04</div>
+                        <p><strong>New hires take months to get productive</strong> because nothing is written down. Your best people carry everything in their heads.</p>
+                    </div>
+                    <div class="problem-item reveal reveal-delay-4">
+                        <div class="problem-icon">05</div>
+                        <p><strong>You need more work in the pipeline</strong> but you don't have a BD person and you don't have time to do it yourself.</p>
+                    </div>
+                </div>
+                <div class="problem-answer reveal">
+                    <h3>These aren't people problems. They're systems problems.</h3>
+                    <p>Your company grew, but the infrastructure to support that growth never got built. The work gets done because good people figure it out every day — not because anything underneath them is holding it together.</p>
+                    <p>You don't need a consulting firm that charges six figures to study the problem and hand you a binder of recommendations. You need someone who builds the actual systems your team will use on Monday morning.</p>
+                    <p style="color: var(--accent); font-weight: 500;">That's what we do.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SERVICES
+         ============================================ -->
+    <section id="services">
+        <div class="container">
+            <div class="section-tag reveal">What We Do</div>
+            <h2 class="section-title reveal">Built to solve real problems.</h2>
+            <p class="section-intro reveal">Two core services that drive the most impact. Everything else flows from what we find once we're inside the operation.</p>
+
+            <div class="services-lead">
+                <div class="service-card featured reveal">
+                    <div class="service-badge">Core Service</div>
+                    <h3>Workforce Architecture &amp; Career Frameworks</h3>
+                    <p>Your people don't see a future at your company — not because there isn't one, but because you've never defined it. We build career structures with clear progression, real titles, defined expectations at every level, and job descriptions that aren't pulled off the internet.</p>
+                    <p>Your team knows where they stand, where they're going, and what it takes to get there. You stop losing people to the shop down the road.</p>
+                    <div class="service-meta">Typical engagement: 6–10 weeks</div>
+                </div>
+                <div class="service-card featured reveal reveal-delay-1">
+                    <div class="service-badge">Core Service</div>
+                    <h3>Targeted Lead Generation</h3>
+                    <p>You know your business needs more work in the pipeline, but you don't have a BD person and you don't have time to do it yourself. We use AI-powered research tools to identify qualified prospects, compile contact information, and deliver a targeted lead report every week.</p>
+                    <p>You provide feedback on what's working and what's not, and the targeting gets sharper over time. A business development function without the full-time salary.</p>
+                    <div class="service-meta">Weekly reports · Ongoing refinement</div>
+                </div>
+            </div>
+
+            <div class="services-supporting reveal">
+                <h3>We Also Build</h3>
+                <div class="supporting-grid">
+                    <div class="supporting-item">
+                        <h4>Process Documentation</h4>
+                        <p>Extract tribal knowledge and turn it into documented, repeatable processes your team can follow without guessing.</p>
+                    </div>
+                    <div class="supporting-item">
+                        <h4>Custom AI Tools</h4>
+                        <p>Quoting assistants, document generators, and workflow automations. Production-ready tools built for your specific operation.</p>
+                    </div>
+                    <div class="supporting-item">
+                        <h4>Organizational Design</h4>
+                        <p>Org charts, reporting structures, role clarity, and gap analysis for companies that have outgrown their informal structure.</p>
+                    </div>
+                    <div class="supporting-item">
+                        <h4>PM &amp; Operational Systems</h4>
+                        <p>Dashboards, scheduling tools, documentation standards, and cost tracking. Project controls that let you manage work instead of chase it.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         CASE STUDIES
+         ============================================ -->
+    <section id="work">
+        <div class="container">
+            <div class="section-tag reveal">Proof of Work</div>
+            <h2 class="section-title reveal">Real engagements. Real results.</h2>
+            <p class="section-intro reveal">Client details anonymized. The work speaks for itself.</p>
+
+            <div class="case-studies-grid">
+                <div class="case-study reveal">
+                    <div class="case-study-header" onclick="toggleCase(this)">
+                        <div class="case-study-left">
+                            <div class="case-study-number">01</div>
+                            <div>
+                                <h3>Workforce Architecture &amp; Career Framework</h3>
+                                <div class="client-type">Industrial Contractor · 40+ Field Employees</div>
+                            </div>
+                        </div>
+                        <div class="case-study-toggle">+</div>
+                    </div>
+                    <div class="case-study-content">
+                        <div class="case-study-body">
+                            <div class="case-study-col">
+                                <h4>The Problem</h4>
+                                <p>The entire technical workforce was classified under one generic title. A senior specialist and an entry-level hire held the same title. No visibility into capabilities, no career progression, no formal job descriptions.</p>
+                            </div>
+                            <div class="case-study-col">
+                                <h4>What We Built</h4>
+                                <p>A complete career framework with 10+ labor categories and 30+ unique role/level combinations. Standardized job descriptions, updated org chart, full employee mapping with compensation modeling for cost-neutral rollout.</p>
+                            </div>
+                            <div class="case-study-col">
+                                <h4>The Result</h4>
+                                <p>Every employee received a title reflecting actual capabilities. Leadership gained real workforce visibility and a defensible progression structure. Zero unplanned compensation impact.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-study reveal reveal-delay-1">
+                    <div class="case-study-header" onclick="toggleCase(this)">
+                        <div class="case-study-left">
+                            <div class="case-study-number">02</div>
+                            <div>
+                                <h3>Estimation Department Build-Out</h3>
+                                <div class="client-type">Industrial Contractor</div>
+                            </div>
+                        </div>
+                        <div class="case-study-toggle">+</div>
+                    </div>
+                    <div class="case-study-content">
+                        <div class="case-study-body">
+                            <div class="case-study-col">
+                                <h4>The Problem</h4>
+                                <p>No formalized estimation process. Bids built ad hoc without standardized tools. Pricing was inconsistent and hard to defend. Money left on the table or costs eaten without warning.</p>
+                            </div>
+                            <div class="case-study-col">
+                                <h4>What We Built</h4>
+                                <p>A complete estimation function: tools, labor frameworks, pricing models, and workflows connecting estimation to project management and field operations. Built for daily production use.</p>
+                            </div>
+                            <div class="case-study-col">
+                                <h4>The Result</h4>
+                                <p>200+ production estimates completed using the system. Standardized, repeatable, and audit-ready. The team can defend every number.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-study reveal reveal-delay-2">
+                    <div class="case-study-header" onclick="toggleCase(this)">
+                        <div class="case-study-left">
+                            <div class="case-study-number">03</div>
+                            <div>
+                                <h3>AI-Powered Lead Generation</h3>
+                                <div class="client-type">Regional Transportation Company</div>
+                            </div>
+                        </div>
+                        <div class="case-study-toggle">+</div>
+                    </div>
+                    <div class="case-study-content">
+                        <div class="case-study-body">
+                            <div class="case-study-col">
+                                <h4>The Problem</h4>
+                                <p>Needed new business but didn't have the staff or budget for dedicated business development. The owner knew growth was out there but didn't have the time or tools to find it.</p>
+                            </div>
+                            <div class="case-study-col">
+                                <h4>What We Built</h4>
+                                <p>Using AI agent technology, we identified target prospects, compiled contact information, and produced a professional lead report with actionable targets. From initial brief to finished report: under 20 minutes.</p>
+                            </div>
+                            <div class="case-study-col">
+                                <h4>The Result</h4>
+                                <p>A targeted lead report that would have taken a junior BD analyst days to compile. New revenue conversations started within the week.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         ABOUT
+         ============================================ -->
+    <section id="about">
+        <div class="container">
+            <div class="section-tag reveal">About</div>
+            <h2 class="section-title reveal">Built by someone who's done the work.</h2>
+
+            <div class="about-grid">
+                <div class="about-text reveal">
+                    <p>Ridgeline Consulting is led by Andrew Polk. 13+ years building and managing operational systems in defense contracting and industrial environments — the kind of environments where the government audits your work, mistakes shut down contracts, and "good enough" doesn't pass inspection.</p>
+                    <p>That background shapes everything we build. Systems are documented, defensible, and built for the people who have to use them every day. Not theory. Not recommendations. Working infrastructure.</p>
+                    <p>We also integrate AI into everything we deliver. Not as a gimmick, but as a practical tool that lets us work faster and deliver at a cost that makes sense for companies that aren't Fortune 500. You get consulting-grade output without the consulting-grade invoice.</p>
+
+                    <div class="about-values">
+                        <div class="value-item">
+                            <div class="value-marker"></div>
+                            <div>
+                                <h4>We Build, We Don't Advise</h4>
+                                <p>You get working systems, not a binder of recommendations. Tools and frameworks your team uses on day one.</p>
+                            </div>
+                        </div>
+                        <div class="value-item">
+                            <div class="value-marker"></div>
+                            <div>
+                                <h4>Faster and Leaner</h4>
+                                <p>AI-powered workflows let us deliver in weeks what traditional firms take months to produce. Same output, fraction of the cost.</p>
+                            </div>
+                        </div>
+                        <div class="value-item">
+                            <div class="value-marker"></div>
+                            <div>
+                                <h4>Built for Your Size</h4>
+                                <p>We work with companies of 20 to 200 employees. Solutions scaled to your headcount, your budget, and your reality.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-stats reveal reveal-delay-1">
+                    <div class="stat-card">
+                        <div class="stat-number">13+</div>
+                        <div class="stat-label">Years in defense contracting &amp; industrial operations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">200+</div>
+                        <div class="stat-label">Production estimates built on our systems</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">30+</div>
+                        <div class="stat-label">Unique role/level combinations designed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">&lt;20m</div>
+                        <div class="stat-label">Minutes to deliver AI-powered lead reports</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         HOW WE WORK
+         ============================================ -->
+    <section id="process">
+        <div class="container">
+            <div class="section-tag reveal">How We Work</div>
+            <h2 class="section-title reveal">No surprises. No bloat.</h2>
+            <p class="section-intro reveal">Clear scope, clear deliverables, clear timeline. You know what you're getting and what it costs before we start.</p>
+
+            <div class="process-steps">
+                <div class="process-step reveal">
+                    <div class="step-number">1</div>
+                    <h3>Discovery Call</h3>
+                    <p>A conversation to understand your business and where the gaps are. No charge, no obligation. If we can help, we'll tell you how and what it costs. If we can't, we'll tell you that too.</p>
+                </div>
+                <div class="process-step reveal reveal-delay-1">
+                    <div class="step-number">2</div>
+                    <h3>Project Engagement</h3>
+                    <p>Defined scope, defined deliverables, defined timeline. Most engagements run 4 to 12 weeks. You know exactly what you're getting before we start.</p>
+                </div>
+                <div class="process-step reveal reveal-delay-2">
+                    <div class="step-number">3</div>
+                    <h3>Ongoing Support</h3>
+                    <p>For services like lead generation or operational support, we offer monthly arrangements that flex with your needs. Consistent value, no long-term contracts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         CONTACT
+         ============================================ -->
+    <section id="contact">
+        <div class="container">
+            <div class="section-tag reveal">Let's Talk</div>
+            <h2 class="section-title reveal">Ready to build?</h2>
+
+            <div class="contact-grid">
+                <div class="contact-info reveal">
+                    <h3>Start with a conversation.</h3>
+                    <p>Tell us a little about your business and what you're dealing with. If we can help, we'll tell you how. If we can't, we'll say that too. No pitch, no pressure.</p>
+
+                    <div class="contact-details">
+                        <div class="contact-line">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <span>(757) 589-5002</span>
+                        </div>
+                        <div class="contact-line">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <span>andrew@gferidgeline.com</span>
+                        </div>
+                        <div class="contact-line">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span>Wabash, Indiana</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="contact-form reveal reveal-delay-1" id="contactForm" onsubmit="handleSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required placeholder="Jim Richardson">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required placeholder="jim@yourcompany.com">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="website">Company Website <span style="color: var(--text-muted); text-transform: none; letter-spacing: 0; font-weight: 400;">(optional)</span></label>
+                            <input type="url" id="website" name="website" placeholder="https://yourcompany.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="interest">What Are You Interested In?</label>
+                            <select id="interest" name="interest">
+                                <option value="" disabled selected>Select one</option>
+                                <option value="workforce">Workforce Architecture & Career Frameworks</option>
+                                <option value="leads">Targeted Lead Generation</option>
+                                <option value="ai">Custom AI Tools & Automation</option>
+                                <option value="operations">Operational Systems & PM</option>
+                                <option value="other">Something else</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">What Brought You Here?</label>
+                        <textarea id="message" name="message" placeholder="Tell us about your business and what you're dealing with..."></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Send Message</button>
+                    <p class="form-note">We'll typically respond within one business day. No spam, no sales sequences — just a real conversation about whether we can help.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer>
+        <div class="container">
+            <div class="footer-logo"><span class="gfe">GFE</span> RIDGELINE CONSULTING</div>
+            <p>&copy; 2026 GFE Ridgeline Consulting, LLC. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ============================================
+         JAVASCRIPT
+         ============================================ -->
+    <script>
+        // Scroll reveal animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Navbar scroll effect
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close mobile menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Case study accordion
+        function toggleCase(header) {
+            const caseStudy = header.parentElement;
+            const isActive = caseStudy.classList.contains('active');
+
+            // Close all
+            document.querySelectorAll('.case-study').forEach(cs => {
+                cs.classList.remove('active');
+            });
+
+            // Open clicked if it wasn't active
+            if (!isActive) {
+                caseStudy.classList.add('active');
+            }
+        }
+
+        // Contact form handler (placeholder — replace with webhook)
+        function handleSubmit(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                website: document.getElementById('website').value,
+                interest: document.getElementById('interest').value,
+                message: document.getElementById('message').value
+            };
+
+            // TODO: Replace with webhook to Twin.so / Formspree / Netlify Forms
+            console.log('Form submission:', formData);
+
+            // Show success state
+            const btn = document.querySelector('.form-submit');
+            const originalText = btn.textContent;
+            btn.textContent = 'Message Sent ✓';
+            btn.style.background = '#2a7d4f';
+
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+                document.getElementById('contactForm').reset();
+            }, 3000);
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
