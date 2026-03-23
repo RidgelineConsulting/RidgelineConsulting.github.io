@@ -129,17 +129,47 @@
         </div>
     </footer>
 
-    <script>
-        document.getElementById('mobileToggle').addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('active');
+</script>
+    document.getElementById('mobileToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('active');
+});
+window.addEventListener('scroll', function() {
+    document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50);
+});
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+document.querySelector('.contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('.form-submit');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    const data = {
+        name: this.name.value,
+        email: this.email.value,
+        company: this.company.value,
+        interest: this.interest.value,
+        message: this.message.value
+    };
+
+    try {
+        await fetch('https://gferidgeline.app.n8n.cloud/webhook/prospect-inquiry', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
         });
-        window.addEventListener('scroll', function() {
-            document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50);
-        });
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        btn.textContent = 'Sent';
+        this.reset();
+        document.querySelector('.form-note').textContent = 'Got it. You will hear back within one business day.';
+    } catch(err) {
+        btn.textContent = 'Send Message';
+        btn.disabled = false;
+        document.querySelector('.form-note').textContent = 'Something went wrong. Try emailing andrew@gferidgeline.com directly.';
+    }
+});
     </script>
 
 </body>
